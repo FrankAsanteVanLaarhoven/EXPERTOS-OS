@@ -88,3 +88,4 @@ flowchart TD
 - **Human-in-the-Loop Barrier**: State-changing tool invocations require operator approval.
 - **Auditability**: Every inference run is tagged `MODEL_UNVERIFIED` until backed by signed evidence.
 - **Container Isolation**: Multi-stage, unprivileged Docker build (`UID 10001`, `cap_drop: ALL`).
+

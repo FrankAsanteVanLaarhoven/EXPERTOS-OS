@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>EXPERTOS — World Intelligence OS</title>
-  <meta name="description" content="EXPERTOS WORLD OS: An extensible multi-agent world-intelligence platform combining specialist agent manifests, spatial intelligence, and STRATUM-X evidence verification.">
+  <meta name="description" content="EXPERTOS-OS: Enterprise multi-agent operating environment combining specialist manifests, spatial intelligence, conversational voice, STRATUM-X evidence assurance, and air-gap security.">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#070b13">
   <!-- Open Graph non-sensitive tags -->
-  <meta property="og:title" content="EXPERTOS WORLD OS">
+  <meta property="og:title" content="EXPERTOS-OS">
   <meta property="og:description" content="Evidence-first multi-agent world intelligence operating environment.">
   <meta property="og:type" content="website">
   <!-- Branded Favicon (Quality Gate Q04) -->
@@ -17,61 +17,177 @@
 </head>
 <body>
 <div class="app-shell">
+  <!-- Sidebar -->
   <aside class="sidebar" aria-label="System Navigation and Specialists">
     <div class="logo-row">
       <div class="brand-glyph" aria-hidden="true">✳</div>
       <div>
         <div class="brand-name">EXPERTOS<span>OS</span></div>
-        <div class="brand-sub">COLLECTIVE INTELLIGENCE</div>
+        <div class="brand-sub" data-i18n="brand_sub">COLLECTIVE INTELLIGENCE</div>
       </div>
     </div>
     
     <div class="workspace-tag">
-      <span class="pulse green" aria-hidden="true"></span> PERSONAL COMMAND CENTER <span class="tag-arrow" aria-hidden="true">⌄</span>
+      <span class="pulse green" aria-hidden="true"></span>
+      <span data-i18n="command_center">PERSONAL COMMAND CENTER</span>
+      <span class="tag-arrow" aria-hidden="true">⌄</span>
     </div>
 
+    <!-- Operating Modules Navigation -->
     <nav class="module-nav" aria-label="Operating Modes">
-      <button class="nav-tab active" data-tab="world"><span>◎</span> World Intelligence</button>
-      <button class="nav-tab" data-tab="orchestration"><span>✦</span> Multi-Agent DAG</button>
-      <button class="nav-tab" data-tab="approvals"><span>⬢</span> MCP Approvals <span class="badge" id="approval-badge">0</span></button>
-      <button class="nav-tab" data-tab="evidence"><span>◈</span> STRATUM-X Audit</button>
+      <button class="nav-tab active" data-tab="world">
+        <span aria-hidden="true">◎</span>
+        <span data-i18n="nav_world">World Intelligence</span>
+      </button>
+      <button class="nav-tab" data-tab="orchestration">
+        <span aria-hidden="true">✦</span>
+        <span data-i18n="nav_dag">Multi-Agent DAG</span>
+      </button>
+      <button class="nav-tab" data-tab="approvals">
+        <span aria-hidden="true">⬢</span>
+        <span data-i18n="nav_mcp">MCP Approvals</span>
+        <span class="badge" id="approval-badge">0</span>
+      </button>
+      <button class="nav-tab" data-tab="evidence">
+        <span aria-hidden="true">◈</span>
+        <span data-i18n="nav_audit">STRATUM-X Audit</span>
+      </button>
     </nav>
     
-    <div class="side-caption">YOUR SPECIALISTS <span id="agent-count">08</span></div>
+    <div class="side-caption">
+      <span data-i18n="specialists_caption">YOUR SPECIALISTS</span>
+      <span id="agent-count">08</span>
+    </div>
     <nav class="agent-list" id="agent-list" aria-label="Specialist Agents List"></nav>
-    <button class="new-agent" id="new-agent" aria-label="Create specialist agent"><span>＋</span> Create specialist agent <span class="shortcut">N</span></button>
+    
+    <button class="new-agent" id="new-agent" aria-label="Create specialist agent">
+      <span>＋</span>
+      <span data-i18n="create_agent_btn">Create specialist manifest</span>
+      <span class="shortcut">N</span>
+    </button>
     
     <div class="sidebar-bottom">
-      <div class="micro-label">SYSTEM INTEGRITY</div>
-      <div class="integrity"><span class="pulse amber" aria-hidden="true"></span><span id="system-state">LOCAL PROTOTYPE</span></div>
-      <div class="side-muted">Human-directed · Evidence-first</div>
+      <div class="micro-label" data-i18n="security_integrity">SECURITY &amp; INTEGRITY</div>
+      <div class="integrity">
+        <span class="pulse green" id="airgap-indicator-dot" aria-hidden="true"></span>
+        <span id="system-state" data-i18n="system_state">CONNECTED / SECURED</span>
+      </div>
+      <div class="side-muted" data-i18n="side_motto">Human-directed · Evidence-first</div>
       <div class="profile">
         <span class="profile-avatar">FV</span>
-        <div><strong>Administrator</strong><small>Workspace owner</small></div>
+        <div><strong>Administrator</strong><small data-i18n="workspace_owner">Workspace Owner</small></div>
         <span aria-hidden="true">⋯</span>
       </div>
     </div>
   </aside>
 
+  <!-- Main Stage -->
   <main class="main" id="main-content">
+    <!-- Topbar with Localisation, Themes, Clocks, Air-Gap -->
     <header class="topbar">
-      <div class="breadcrumb">OPERATIONS <span>/</span> <b id="current-area">WORLD OVERVIEW</b></div>
+      <div class="breadcrumb">
+        <span data-i18n="operations">OPERATIONS</span> <span>/</span> <b id="current-area">WORLD OVERVIEW</b>
+      </div>
+
       <div class="top-actions">
-        <span class="connection-pill"><i class="pulse amber" aria-hidden="true"></i><span id="live-status">CONNECTING</span></span>
-        <span class="top-time" id="clock">--:--:-- UTC</span>
+        <!-- 30-Language Selector Dropdown -->
+        <div class="dropdown-wrapper">
+          <label for="lang-select" class="sr-only">Select Language</label>
+          <select id="lang-select" class="top-select" aria-label="Platform Language">
+            <option value="en" selected>🇬🇧 English</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="zh">🇨🇳 简体中文</option>
+            <option value="ja">🇯🇵 日本語</option>
+            <option value="ko">🇰🇷 한국어</option>
+            <option value="ar">🇸🇦 العربية</option>
+            <option value="pt">🇧🇷 Português</option>
+            <option value="ru">🇷🇺 Русский</option>
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="hi">🇮🇳 हिन्दी</option>
+            <option value="nl">🇳🇱 Nederlands</option>
+            <option value="sv">🇸🇪 Svenska</option>
+            <option value="pl">🇵🇱 Polski</option>
+            <option value="tr">🇹🇷 Türkçe</option>
+            <option value="vi">🇻🇳 Tiếng Việt</option>
+            <option value="th">🇹🇭 ไทย</option>
+            <option value="id">🇮🇩 Bahasa Indonesia</option>
+            <option value="he">🇮🇱 עברית</option>
+            <option value="el">🇬🇷 Ελληνικά</option>
+            <option value="cs">🇨🇿 Čeština</option>
+            <option value="da">🇩🇰 Dansk</option>
+            <option value="fi">🇫🇮 Suomi</option>
+            <option value="no">🇳🇴 Norsk</option>
+            <option value="hu">🇭🇺 Magyar</option>
+            <option value="ro">🇷🇴 Română</option>
+            <option value="uk">🇺🇦 Українська</option>
+            <option value="bn">🇧🇩 বাংলা</option>
+            <option value="ms">🇲🇾 Bahasa Melayu</option>
+          </select>
+        </div>
+
+        <!-- Theme Mode Switcher: Dark / Light / System -->
+        <div class="theme-switch-group" role="group" aria-label="Theme Selection">
+          <button class="theme-btn active" data-theme-mode="dark" title="Dark Theme" aria-label="Dark Theme">🌙</button>
+          <button class="theme-btn" data-theme-mode="light" title="Light Theme" aria-label="Light Theme">☀️</button>
+          <button class="theme-btn" data-theme-mode="system" title="System Auto Theme" aria-label="System Auto Theme">💻</button>
+        </div>
+
+        <!-- Fluid Color Picker Dropdown -->
+        <div class="color-picker-wrapper">
+          <button class="icon-button" id="color-menu-btn" title="Fluid Theme Color" aria-label="Fluid Theme Color">🎨</button>
+          <div class="color-palette-popover hidden" id="color-palette-popover">
+            <span class="micro-label" data-i18n="fluid_color">FLUID ACCENT</span>
+            <div class="color-swatches">
+              <button class="swatch active" data-color="#30d6a3" style="background:#30d6a3" title="Cyber Mint"></button>
+              <button class="swatch" data-color="#00e5ff" style="background:#00e5ff" title="Electric Cyan"></button>
+              <button class="swatch" data-color="#ffb300" style="background:#ffb300" title="Solar Amber"></button>
+              <button class="swatch" data-color="#ff3366" style="background:#ff3366" title="Crimson Sentinel"></button>
+              <button class="swatch" data-color="#9d4edd" style="background:#9d4edd" title="Deep Violet"></button>
+              <button class="swatch" data-color="#2979ff" style="background:#2979ff" title="Cobalt Blue"></button>
+            </div>
+            <label class="custom-color-label">
+              <span data-i18n="custom_hex">Custom</span>
+              <input type="color" id="custom-color-picker" value="#30d6a3" aria-label="Custom Color Picker">
+            </label>
+          </div>
+        </div>
+
+        <!-- World Clock Trigger -->
+        <button class="topbar-clock-btn" id="world-clock-trigger" title="Global Situation Clocks" aria-label="Global Situation Clocks">
+          <span class="clock-icon">🌐</span>
+          <span class="top-time" id="clock">--:--:-- UTC</span>
+        </button>
+
+        <!-- 7-Day Weather Forecaster Trigger -->
+        <button class="weather-btn" id="open-weather-btn" title="7-Day Atmospheric Forecast" aria-label="7-Day Atmospheric Forecast">
+          <span>🌤️</span> <b data-i18n="forecast_btn">7-Day Forecast</b>
+        </button>
+
+        <!-- Air-Gap Operations Toggle Switch -->
+        <button class="airgap-toggle-btn" id="airgap-toggle-btn" title="Toggle Air-Gap Isolation Perimeter" aria-pressed="false">
+          <span class="pulse green" id="airgap-pulse"></span>
+          <span id="airgap-label">AIR-GAP: OFF</span>
+        </button>
+
+        <!-- View Controls -->
         <button class="icon-button" id="reset-view" title="Reset planet viewport" aria-label="Reset planet viewport">↺</button>
         <button class="icon-button" id="open-builder" title="Create an agent" aria-label="Create specialist agent">＋</button>
       </div>
     </header>
 
+    <!-- Headline Section -->
     <section class="headline">
       <div>
-        <div class="eyebrow">EXPERTOS / GLOBAL SITUATION ROOM <span class="eyebrow-line"></span> <span id="date-label"></span></div>
+        <div class="eyebrow">
+          EXPERTOS / GLOBAL SITUATION ROOM <span class="eyebrow-line"></span> <span id="date-label"></span>
+        </div>
         <h1>The world, <em>understood.</em></h1>
-        <p>One workspace. Dedicated expert agents. Verifiable intelligence.</p>
+        <p data-i18n="headline_sub">One workspace. Dedicated expert agents. Verifiable intelligence.</p>
       </div>
       <div class="headline-meta">
-        <div class="meta-k">ACTIVE INTELLIGENCE LENS</div>
+        <div class="meta-k" data-i18n="active_lens">ACTIVE INTELLIGENCE LENS</div>
         <strong id="lens-title">World Atlas</strong>
         <small id="lens-subtitle">Temporal evidence visualization</small>
       </div>
@@ -81,6 +197,7 @@
     <div class="tab-pane active" id="pane-world">
       <section class="dashboard">
         <div class="primary-pane">
+          <!-- 3D Globe Display -->
           <div class="display-panel">
             <div class="panel-head">
               <div>
@@ -98,13 +215,13 @@
             <div class="globe-wrap">
               <canvas id="globe" aria-label="Interactive rotating globe visualization of live USGS earthquake events and world intelligence"></canvas>
               <div class="globe-left">
-                <span class="eyebrow tiny">PLANETARY OVERVIEW</span>
+                <span class="eyebrow tiny" data-i18n="planetary_overview">PLANETARY OVERVIEW</span>
                 <div class="globe-metric">WORLD<span class="accent">/01</span></div>
                 <div class="coordinates" id="coordinates">51.51° N · 0.13° W</div>
                 <div class="globe-legend">
-                  <div><i class="dot mint"></i> Observed earthquakes <span id="earthquake-count">—</span></div>
-                  <div><i class="dot blue"></i> Macroeconomic indices <span>verified</span></div>
-                  <div><i class="dot orange"></i> Navigation advisories <span>monitored</span></div>
+                  <div><i class="dot mint"></i> <span data-i18n="seismic_legend">Observed earthquakes</span> <span id="earthquake-count">—</span></div>
+                  <div><i class="dot blue"></i> <span data-i18n="economic_legend">Macroeconomic indices</span> <span>verified</span></div>
+                  <div><i class="dot orange"></i> <span data-i18n="geo_legend">Navigation advisories</span> <span>monitored</span></div>
                 </div>
               </div>
               <div class="globe-right">
@@ -119,19 +236,20 @@
             </div>
           </div>
 
+          <!-- Metrics Row -->
           <div class="metric-grid">
             <div class="metric-card">
-              <div class="metric-label">CORE SPECIALISTS <span>↗</span></div>
-              <div class="metric-value">08 <small>available</small></div>
-              <div class="metric-note">Versioned agent manifests</div>
+              <div class="metric-label"><span data-i18n="core_specialists">CORE SPECIALISTS</span> <span>↗</span></div>
+              <div class="metric-value">08 <small data-i18n="available_label">available</small></div>
+              <div class="metric-note" data-i18n="versioned_manifests_note">Versioned agent manifests</div>
             </div>
             <div class="metric-card">
-              <div class="metric-label">LIVE SOURCE EVENTS <span>↗</span></div>
+              <div class="metric-label"><span data-i18n="live_events">LIVE SOURCE EVENTS</span> <span>↗</span></div>
               <div class="metric-value" id="metric-events">— <small>USGS</small></div>
               <div class="metric-note" id="events-note">Awaiting authenticated source time</div>
             </div>
             <div class="metric-card">
-              <div class="metric-label">MODEL ROUTER <span>↗</span></div>
+              <div class="metric-label"><span data-i18n="model_router">MODEL ROUTER</span> <span>↗</span></div>
               <div class="metric-value" id="metric-router">OFF <small>provider</small></div>
               <div class="metric-note" id="router-note">Configure server-only key</div>
             </div>
@@ -155,7 +273,7 @@
             </div>
           </div>
 
-          <!-- Operations Conversation Console -->
+          <!-- Operations Conversation Console with Conversational Voice (ASR & TTS) -->
           <div class="operations-panel">
             <div class="panel-top">
               <div>
@@ -166,30 +284,53 @@
                 <span class="pulse amber" aria-hidden="true"></span> <span id="run-state">READY</span>
               </div>
             </div>
+            
             <div class="conversation" id="conversation">
               <div class="empty-convo">
                 <span aria-hidden="true">✳</span>
                 <strong>Ask the collective.</strong>
-                <p>Select a specialist, define a task, and retain a traceable record of the response. Model answers remain unverified until independently assessed.</p>
+                <p>Select a specialist, speak or type a task, and retain a traceable record of the response. Model answers remain unverified until independently assessed.</p>
               </div>
             </div>
+            
+            <!-- Voice Audio Visualizer Waveform -->
+            <div class="voice-bar hidden" id="voice-bar">
+              <div class="voice-pulse-circle"></div>
+              <span id="voice-status-text">Listening… Speak your prompt clearly</span>
+              <div class="voice-wave">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+            </div>
+
             <div class="compose-area">
               <div class="quick-prompts">
                 <button data-prompt="Design a reproducible geopolitical claim-verification workflow with falsification tests.">Research protocol ↗</button>
                 <button data-prompt="Design an evidence-backed 3D world intelligence dashboard with temporal provenance.">World intelligence ↗</button>
                 <button data-prompt="Audit the security boundaries of a user-created MCP agent with least privilege.">MCP security ↗</button>
               </div>
+              
               <form id="chat-form">
-                <textarea id="chat-input" rows="2" placeholder="Ask your specialist to research, reason, build, or verify..." aria-label="Prompt message"></textarea>
+                <textarea id="chat-input" rows="2" placeholder="Ask your specialist to research, reason, build, or verify... (or click 🎤 to speak)" aria-label="Prompt message"></textarea>
                 <div class="compose-bottom">
+                  <!-- Live Speech Recognition (ASR) & Text-to-Speech (TTS) Controls -->
+                  <div class="voice-controls">
+                    <button type="button" class="voice-tool-btn" id="mic-btn" title="Speak to agent (Live Speech-to-Text ASR)" aria-label="Start voice input">
+                      🎤 <span class="voice-btn-label">Dictate</span>
+                    </button>
+                    <button type="button" class="voice-tool-btn active" id="tts-toggle-btn" title="Agent Voice Output (Speech Synthesis TTS)" aria-label="Toggle agent voice speech">
+                      🔊 <span class="voice-btn-label">Voice Output</span>
+                    </button>
+                  </div>
+
                   <div class="model-group">
                     <span>MODEL</span>
                     <select id="model-select" aria-label="Model selection">
                       <option value="openrouter/auto">OpenRouter · Auto</option>
                     </select>
                   </div>
+                  
                   <span class="model-hint">Ctrl / ⌘ + Enter</span>
-                  <button type="submit" class="send-btn">Run specialist <span>↗</span></button>
+                  <button type="submit" class="send-btn" id="run-agent-btn">Run specialist <span>↗</span></button>
                 </div>
               </form>
             </div>
@@ -231,8 +372,8 @@
             <div class="source-entry">
               <span>02</span>
               <div>
-                <strong>Global Macro & Logistics</strong>
-                <small>BDI, Brent Crude & Euribor</small>
+                <strong>Global Macro &amp; Logistics</strong>
+                <small>BDI, Brent Crude &amp; Euribor</small>
               </div>
               <span id="econ-indicator" class="source-indicator">CONNECTED</span>
             </div>
@@ -240,7 +381,7 @@
               <span>03</span>
               <div>
                 <strong>Maritime Navigation Feeds</strong>
-                <small>Suez & Malacca Advisories</small>
+                <small>Suez &amp; Malacca Advisories</small>
               </div>
               <span id="geo-indicator" class="source-indicator">CONNECTED</span>
             </div>
@@ -267,7 +408,7 @@
             <label for="mission-objective">Executive Objective / Mission Statement</label>
             <div class="mission-input-row">
               <input type="text" id="mission-objective" required placeholder="e.g. Audit systemic supply chain resilience in the Malacca Strait with verified maritime telemetry" value="Assess geopolitical supply chain disruptions in the Strait of Malacca with primary maritime telemetry">
-              <button type="submit" class="send-btn" id="decompose-submit">Decompose & Execute DAG <span>↗</span></button>
+              <button type="submit" class="send-btn" id="decompose-submit">Decompose &amp; Execute DAG <span>↗</span></button>
             </div>
           </form>
         </div>
@@ -288,7 +429,7 @@
 
           <div class="checkpoint-panel">
             <div class="dag-panel-head">
-              <h3>Checkpoints & Recovery</h3>
+              <h3>Checkpoints &amp; Recovery</h3>
               <span class="side-muted">Deterministic state recovery</span>
             </div>
             <div class="checkpoint-list" id="checkpoint-list">
@@ -305,7 +446,7 @@
         <div class="mcp-header">
           <div>
             <span class="section-kicker">MODEL CONTEXT PROTOCOL / ZERO-TRUST BROKER</span>
-            <h2>Capability Registry & Human Approval Center</h2>
+            <h2>Capability Registry &amp; Human Approval Center</h2>
             <p>MCP tools run inside isolated execution sandboxes with audience token checks. Side-effect actions require explicit human operator authorization.</p>
           </div>
         </div>
@@ -340,7 +481,7 @@
         <div class="evidence-header">
           <div>
             <span class="section-kicker">STRATUM-X / CRYPTOGRAPHIC AUDIT</span>
-            <h2>Signed Evidence Packages & Replay Stream</h2>
+            <h2>Signed Evidence Packages &amp; Replay Stream</h2>
             <p>Every sensor ingestion, economic series, and geospatial record receives an Ed25519 DSSE-compatible digest with bitemporal causality validation.</p>
           </div>
           <button id="run-adv-benchmark" class="orch-action-btn">Run Adversarial Benchmark ↗</button>
@@ -359,7 +500,7 @@
 
           <div class="evidence-box">
             <div class="box-head">
-              <h3>Package Inspector & Verification</h3>
+              <h3>Package Inspector &amp; Verification</h3>
               <span class="micro-label" id="inspector-badge">SELECT PACKAGE</span>
             </div>
             <div class="inspector-content" id="inspector-content">
@@ -372,7 +513,48 @@
   </main>
 </div>
 
-<!-- Modal: Create Agent Manifest -->
+<!-- Modal 1: 7-Day Atmospheric Weather Forecast -->
+<div class="modal-overlay hidden" id="weather-modal" role="dialog" aria-modal="true" aria-labelledby="weather-title">
+  <div class="builder weather-modal-card">
+    <div class="builder-head">
+      <div>
+        <span class="section-kicker">METEOROLOGICAL TELEMETRY / STRATUM-X FORECAST</span>
+        <h2 id="weather-title">7-Day Atmospheric Outlook</h2>
+        <p>Grounded ECMWF model trajectory with bitemporal uncertainty bands. Strictly classified as FORECAST under the Live World-Source Ladder.</p>
+      </div>
+      <button class="close-modal" id="close-weather" aria-label="Close dialog">×</button>
+    </div>
+    
+    <div class="weather-grid" id="weather-cards-container">
+      <div class="feed-placeholder">Retrieving probabilistic forecast data…</div>
+    </div>
+    
+    <div class="weather-footer">
+      <span class="verified-stamp">STRATUM-X GROUNDED PROVENANCE</span>
+      <span class="weather-baseline-note">Lead-time uncertainty expands from ±5% (Day 1) to ±34% (Day 7).</span>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 2: Multi-Timezone Global Situation Clocks -->
+<div class="modal-overlay hidden" id="world-clock-modal" role="dialog" aria-modal="true" aria-labelledby="clock-modal-title">
+  <div class="builder clock-modal-card">
+    <div class="builder-head">
+      <div>
+        <span class="section-kicker">PLANETARY SYNCHRONIZATION</span>
+        <h2 id="clock-modal-title">Global Situation Timezones</h2>
+        <p>Real-time local time tracking across primary geopolitical, financial, and maritime centers.</p>
+      </div>
+      <button class="close-modal" id="close-clocks" aria-label="Close dialog">×</button>
+    </div>
+    
+    <div class="clocks-grid" id="clocks-grid">
+      <!-- Populated dynamically via JS -->
+    </div>
+  </div>
+</div>
+
+<!-- Modal 3: Create Agent Manifest -->
 <div class="modal-overlay hidden" id="builder-modal" role="dialog" aria-modal="true" aria-labelledby="builder-title">
   <div class="builder">
     <div class="builder-head">

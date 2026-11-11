@@ -261,3 +261,38 @@ def test_branded_favicon():
     assert 'image/svg+xml' in r.headers['content-type']
     assert '<svg' in r.text
 
+# 9. Air-Gap Operations & 7-Day Weather Forecasting
+def test_airgap_mode_lifecycle():
+    # Enable airgap
+    r_on = client.post('/api/airgap', json={'enabled': True})
+    assert r_on.status_code == 200
+    assert r_on.json()['airgap_enabled'] is True
+    
+    # Status endpoint reflects airgap
+    r_stat = client.get('/api/airgap')
+    assert r_stat.status_code == 200
+    assert r_stat.json()['airgap_enabled'] is True
+    assert r_stat.json()['policy'] == 'ZERO_EXTERNAL_EGRESS'
+    
+    # Inference executes locally without OpenRouter
+    r_run = client.post('/api/agent/run', json={'agent_id': 'master', 'prompt': 'Execute airgap policy check'})
+    assert r_run.status_code == 200
+    data = r_run.json()
+    assert data['evidence_status'] == 'AIRGAP_VERIFIED'
+    assert 'local/airgap-offline' in data['model']
+    
+    # Disable airgap back to connected mode
+    r_off = client.post('/api/airgap', json={'enabled': False})
+    assert r_off.status_code == 200
+    assert r_off.json()['airgap_enabled'] is False
+
+def test_7day_weather_forecast():
+    r = client.get('/api/weather/forecast')
+    assert r.status_code == 200
+    data = r.json()
+    assert data['classification'] == 'FORECAST'
+    assert data['horizon_days'] == 7
+    assert len(data['days']) == 7
+    assert data['days'][0]['temp_high_c'] is not None
+    assert data['days'][0]['uncertainty_pct'] <= data['days'][-1]['uncertainty_pct']
+

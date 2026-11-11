@@ -42,3 +42,4 @@ pytest -q
 - Branch naming: `feat/<feature-name>`, `fix/<bug-fix>`, `audit/<audit-task>`.
 - Commit messages: Use Conventional Commits (e.g. `feat: add AIS vessel telemetry connector`).
 - Sign-off: Include Developer Certificate of Origin (DCO) sign-off (`git commit -s`).
+

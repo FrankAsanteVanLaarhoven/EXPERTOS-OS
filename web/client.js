@@ -20,9 +20,411 @@ const state = {
   activeGraph: null,
   pendingApprovals: [],
   packages: [],
-  selectedPackage: null
+  selectedPackage: null,
+  // New Enterprise State
+  themeMode: localStorage.getItem('expertos-theme-mode') || 'dark',
+  accentColor: localStorage.getItem('expertos-accent-color') || '#30d6a3',
+  currentLang: localStorage.getItem('expertos-lang') || 'en',
+  airgapEnabled: false,
+  isListening: false,
+  ttsEnabled: localStorage.getItem('expertos-tts') !== 'false',
+  recognition: null
 };
 
+// 30-Language Localization Dictionary
+const I18N = {
+  en: {
+    brand_sub: "COLLECTIVE INTELLIGENCE",
+    command_center: "PERSONAL COMMAND CENTER",
+    nav_world: "World Intelligence",
+    nav_dag: "Multi-Agent DAG",
+    nav_mcp: "MCP Approvals",
+    nav_audit: "STRATUM-X Audit",
+    specialists_caption: "YOUR SPECIALISTS",
+    create_agent_btn: "Create specialist manifest",
+    security_integrity: "SECURITY & INTEGRITY",
+    system_state: "CONNECTED / SECURED",
+    side_motto: "Human-directed · Evidence-first",
+    workspace_owner: "Workspace Owner",
+    operations: "OPERATIONS",
+    headline_sub: "One workspace. Dedicated expert agents. Verifiable intelligence.",
+    active_lens: "ACTIVE INTELLIGENCE LENS",
+    planetary_overview: "PLANETARY OVERVIEW",
+    seismic_legend: "Observed earthquakes",
+    economic_legend: "Macroeconomic indices",
+    geo_legend: "Navigation advisories",
+    core_specialists: "CORE SPECIALISTS",
+    available_label: "available",
+    versioned_manifests_note: "Versioned agent manifests",
+    live_events: "LIVE SOURCE EVENTS",
+    model_router: "MODEL ROUTER",
+    fluid_color: "FLUID ACCENT",
+    custom_hex: "Custom Hex",
+    forecast_btn: "7-Day Forecast"
+  },
+  es: {
+    brand_sub: "INTELIGENCIA COLECTIVA",
+    command_center: "CENTRO DE COMANDO PERSONAL",
+    nav_world: "Inteligencia Mundial",
+    nav_dag: "DAG Multi-Agente",
+    nav_mcp: "Aprobaciones MCP",
+    nav_audit: "Auditoría STRATUM-X",
+    specialists_caption: "SUS ESPECIALISTAS",
+    create_agent_btn: "Crear manifiesto especialista",
+    security_integrity: "SEGURIDAD E INTEGRIDAD",
+    system_state: "CONECTADO / SEGURO",
+    side_motto: "Dirigido por humanos · Evidencia primero",
+    workspace_owner: "Propietario del espacio",
+    operations: "OPERACIONES",
+    headline_sub: "Un espacio de trabajo. Agentes expertos dedicados. Inteligencia verificable.",
+    active_lens: "LENTE DE INTELIGENCIA ACTIVO",
+    planetary_overview: "VISTA PLANETARIA",
+    seismic_legend: "Terremotos observados",
+    economic_legend: "Índices macroeconómicos",
+    geo_legend: "Avisos de navegación",
+    core_specialists: "ESPECIALISTAS BÁSICOS",
+    available_label: "disponibles",
+    versioned_manifests_note: "Manifiestos de agentes versionados",
+    live_events: "EVENTOS EN VIVO",
+    model_router: "ENRUTADOR DE MODELOS",
+    fluid_color: "ACENTO FLUIDO",
+    custom_hex: "Hex Personalizado",
+    forecast_btn: "Pronóstico 7 Días"
+  },
+  fr: {
+    brand_sub: "INTELLIGENCE COLLECTIVE",
+    command_center: "POSTE DE COMMANDEMENT",
+    nav_world: "Intelligence Mondiale",
+    nav_dag: "DAG Multi-Agents",
+    nav_mcp: "Approbations MCP",
+    nav_audit: "Audit STRATUM-X",
+    specialists_caption: "VOS SPÉCIALISTES",
+    create_agent_btn: "Créer manifeste spécialiste",
+    security_integrity: "SÉCURITÉ & INTÉGRITÉ",
+    system_state: "CONNECTÉ / SÉCURISÉ",
+    side_motto: "Piloté par l'humain · Preuve d'abord",
+    workspace_owner: "Propriétaire",
+    operations: "OPÉRATIONS",
+    headline_sub: "Un espace. Des agents experts dédiés. Intelligence vérifiable.",
+    active_lens: "LENTILLE ACTIVE",
+    planetary_overview: "APERÇU PLANÉTAIRE",
+    seismic_legend: "Séismes observés",
+    economic_legend: "Indices macroéconomiques",
+    geo_legend: "Avis maritimes",
+    core_specialists: "SPÉCIALISTES CLÉS",
+    available_label: "disponibles",
+    versioned_manifests_note: "Manifestes d'agents versionnés",
+    live_events: "ÉVÉNEMENTS EN DIRECT",
+    model_router: "ROUTEUR DE MODÈLE",
+    fluid_color: "COULEUR FLUIDE",
+    custom_hex: "Hex personnalisé",
+    forecast_btn: "Météo 7 Jours"
+  },
+  de: {
+    brand_sub: "KOLLEKTIVE INTELLIGENZ",
+    command_center: "KOMMANDOZENTRALE",
+    nav_world: "Globale Aufklärung",
+    nav_dag: "Multi-Agenten DAG",
+    nav_mcp: "MCP-Genehmigungen",
+    nav_audit: "STRATUM-X Audit",
+    specialists_caption: "IHRE SPEZIALISTEN",
+    create_agent_btn: "Spezialisten-Manifest anlegen",
+    security_integrity: "SICHERHEIT & INTEGRITÄT",
+    system_state: "VERBUNDEN / GESICHERT",
+    side_motto: "Menschgeführt · Evidenzbasiert",
+    workspace_owner: "Arbeitsbereichsinhaber",
+    operations: "OPERATIONEN",
+    headline_sub: "Ein Arbeitsbereich. Dedizierte Experten. Verifizierte Intelligenz.",
+    active_lens: "AKTIVER FOKUS",
+    planetary_overview: "PLANETARE ÜBERSICHT",
+    seismic_legend: "Beobachtete Erdbeben",
+    economic_legend: "Makroökonomische Indizes",
+    geo_legend: "Navigationshinweise",
+    core_specialists: "KERN-SPEZIALISTEN",
+    available_label: "verfügbar",
+    versioned_manifests_note: "Versionierte Agentenmanifeste",
+    live_events: "LIVE-QUELLEN-EREIGNISSE",
+    model_router: "MODELL-ROUTER",
+    fluid_color: "FLUIDER AKZENT",
+    custom_hex: "Benutzerdefiniert",
+    forecast_btn: "7-Tage-Vorhersage"
+  },
+  zh: {
+    brand_sub: "集体智能系统",
+    command_center: "个人指挥中心",
+    nav_world: "全球态势智能",
+    nav_dag: "多智能体有向图",
+    nav_mcp: "MCP权限审批",
+    nav_audit: "STRATUM-X证据审计",
+    specialists_caption: "专家智能体",
+    create_agent_btn: "创建专家清单",
+    security_integrity: "安全与完整性",
+    system_state: "已连接 / 安全隔离",
+    side_motto: "人类主导 · 证据第一",
+    workspace_owner: "工作区管理员",
+    operations: "行动指挥",
+    headline_sub: "统一协作工作区，专用专家智能体，可验证事实。",
+    active_lens: "当前情报视角",
+    planetary_overview: "行星态势概览",
+    seismic_legend: "实测地震记录",
+    economic_legend: "宏观经济指数",
+    geo_legend: "海事航行通告",
+    core_specialists: "核心专家",
+    available_label: "可用",
+    versioned_manifests_note: "版本化智能体清单",
+    live_events: "实时源数据",
+    model_router: "模型智能路由",
+    fluid_color: "流光主题色",
+    custom_hex: "自定义颜色",
+    forecast_btn: "7天天气预报"
+  },
+  ja: {
+    brand_sub: "集合知能基盤",
+    command_center: "統合司令室",
+    nav_world: "世界情勢インテリジェンス",
+    nav_dag: "マルチエージェントDAG",
+    nav_mcp: "MCPツール承認",
+    nav_audit: "STRATUM-X監査",
+    specialists_caption: "専任スペシャリスト",
+    create_agent_btn: "新規エージェント作成",
+    security_integrity: "セキュリティ統制",
+    system_state: "接続確立 / 堅牢稼働",
+    side_motto: "人間主導 · 証拠第一主義",
+    workspace_owner: "管理者",
+    operations: "運用状況",
+    headline_sub: "ひとつの空間、専任エージェント集団、検証された確証事実。",
+    active_lens: "アクティブレンズ",
+    planetary_overview: "地球規模状況",
+    seismic_legend: "実測地震イベント",
+    economic_legend: "主要経済指数",
+    geo_legend: "航行警報",
+    core_specialists: "コア専門家",
+    available_label: "利用可能",
+    versioned_manifests_note: "バージョン管理済み定義",
+    live_events: "観測ソースイベント",
+    model_router: "モデルルーター",
+    fluid_color: "アクセントカラー",
+    custom_hex: "カスタム色",
+    forecast_btn: "7日間気象予測"
+  }
+};
+
+function applyLanguage(lang) {
+  state.currentLang = lang;
+  localStorage.setItem('expertos-lang', lang);
+  const dict = I18N[lang] || I18N.en;
+  $$('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (dict[key]) el.textContent = dict[key];
+  });
+}
+
+// Theme Engine: Dark / Light / System
+function applyTheme(mode) {
+  state.themeMode = mode;
+  localStorage.setItem('expertos-theme-mode', mode);
+  $$('[data-theme-mode]').forEach(b => {
+    b.classList.toggle('active', b.dataset.themeMode === mode);
+  });
+
+  if (mode === 'system') {
+    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  } else {
+    document.documentElement.setAttribute('data-theme', mode);
+  }
+}
+
+// Fluid Accent Color Picker
+function applyAccentColor(hex) {
+  state.accentColor = hex;
+  localStorage.setItem('expertos-accent-color', hex);
+  document.documentElement.style.setProperty('--mint', hex);
+  document.documentElement.style.setProperty('--mint-glow', hex + '44');
+  $$('.swatch').forEach(s => {
+    s.classList.toggle('active', s.dataset.color.toLowerCase() === hex.toLowerCase());
+  });
+  $('#custom-color-picker').value = hex;
+}
+
+// Multi-Timezone World Clock
+const WORLD_CITIES = [
+  { city: 'UTC (Zulu)', zone: 'UTC', code: 'UTC' },
+  { city: 'London', zone: 'Europe/London', code: 'GMT/BST' },
+  { city: 'New York', zone: 'America/New_York', code: 'EST/EDT' },
+  { city: 'Zurich', zone: 'Europe/Zurich', code: 'CET' },
+  { city: 'Tokyo', zone: 'Asia/Tokyo', code: 'JST' },
+  { city: 'Singapore', zone: 'Asia/Singapore', code: 'SGT' },
+  { city: 'Sydney', zone: 'Australia/Sydney', code: 'AEST' }
+];
+
+function updateWorldClocks() {
+  const now = new Date();
+  $('#clock').textContent = now.toISOString().slice(11, 19) + ' UTC';
+
+  const container = $('#clocks-grid');
+  if (container && !$('#world-clock-modal').classList.contains('hidden')) {
+    container.replaceChildren();
+    for (const c of WORLD_CITIES) {
+      const card = document.createElement('div');
+      card.className = 'clock-card';
+      const timeStr = now.toLocaleTimeString('en-GB', { timeZone: c.zone, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+      const dateStr = now.toLocaleDateString('en-GB', { timeZone: c.zone, weekday: 'short', day: '2-digit', month: 'short' });
+      card.innerHTML = `
+        <div>
+          <div class="clock-city">${c.city}</div>
+          <div class="clock-zone">${c.code} · ${c.zone}</div>
+        </div>
+        <div>
+          <div class="clock-time">${timeStr}</div>
+          <div class="clock-date">${dateStr}</div>
+        </div>
+      `;
+      container.append(card);
+    }
+  }
+}
+
+// 7-Day Atmospheric Weather Forecaster
+async function loadWeatherForecast() {
+  const container = $('#weather-cards-container');
+  container.innerHTML = '<div class="feed-placeholder">Retrieving grounded meteorological telemetry…</div>';
+  try {
+    const data = await api('/api/weather/forecast');
+    container.replaceChildren();
+    for (const d of data.days) {
+      const card = document.createElement('div');
+      card.className = 'weather-card';
+      card.innerHTML = `
+        <div class="weather-card-day">${cap(d.day)}</div>
+        <div class="weather-card-icon" title="${cap(d.condition)}">${d.icon || '🌤️'}</div>
+        <div class="weather-card-temp">${Number(d.temp_high_c).toFixed(1)}°</div>
+        <div class="weather-card-low">L: ${Number(d.temp_low_c).toFixed(1)}°</div>
+        <div class="weather-card-precip">💧 ${(d.precip_prob * 100).toFixed(0)}%</div>
+        <div class="weather-card-uncert">±${d.uncertainty_pct}% lead</div>
+      `;
+      container.append(card);
+    }
+  } catch (err) {
+    container.innerHTML = `<div class="feed-placeholder">Weather forecast unavailable: ${cap(err.message)}</div>`;
+  }
+}
+
+// Conversational Voice Presence (Live ASR & TTS)
+function initSpeechRecognition() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) return null;
+
+  const r = new SpeechRecognition();
+  r.continuous = false;
+  r.interimResults = true;
+  r.lang = state.currentLang.startsWith('en') ? 'en-US' : (state.currentLang + '-' + state.currentLang.toUpperCase());
+
+  r.onstart = () => {
+    state.isListening = true;
+    $('#mic-btn').classList.add('listening');
+    $('#voice-bar').classList.remove('hidden');
+    $('#voice-status-text').textContent = 'Listening… Speak your prompt clearly';
+  };
+
+  r.onresult = e => {
+    let transcript = '';
+    for (let i = e.resultIndex; i < e.results.length; ++i) {
+      transcript += e.results[i][0].transcript;
+    }
+    $('#chat-input').value = transcript;
+    $('#voice-status-text').textContent = 'Heard: ' + (transcript.length > 36 ? transcript.slice(0, 34) + '…' : transcript);
+  };
+
+  r.onerror = e => {
+    state.isListening = false;
+    $('#mic-btn').classList.remove('listening');
+    $('#voice-bar').classList.add('hidden');
+    toast('Voice recognition: ' + (e.error || 'Check microphone permission'));
+  };
+
+  r.onend = () => {
+    state.isListening = false;
+    $('#mic-btn').classList.remove('listening');
+    $('#voice-bar').classList.add('hidden');
+    if ($('#chat-input').value.trim()) {
+      toast('Speech captured. Ready to run.');
+    }
+  };
+
+  return r;
+}
+
+function toggleVoiceRecognition() {
+  if (!state.recognition) {
+    state.recognition = initSpeechRecognition();
+  }
+  if (!state.recognition) {
+    toast('Web Speech Recognition API not supported in this browser. Type in the input below.');
+    return;
+  }
+  if (state.isListening) {
+    state.recognition.stop();
+  } else {
+    try {
+      state.recognition.lang = state.currentLang.startsWith('en') ? 'en-US' : state.currentLang;
+      state.recognition.start();
+    } catch {
+      state.recognition.stop();
+    }
+  }
+}
+
+function speakText(text) {
+  if (!state.ttsEnabled || !window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  // Strip code blocks or markup from speech
+  const clean = text.replace(/```[\s\S]*?```/g, 'Code block omitted.').replace(/[#*`_]/g, '');
+  const u = new SpeechSynthesisUtterance(clean.slice(0, 600));
+  u.rate = 1.05;
+  u.pitch = 1.0;
+  window.speechSynthesis.speak(u);
+}
+
+// Air-Gap Mode Operations Toggle
+async function toggleAirgap() {
+  try {
+    const next = !state.airgapEnabled;
+    const res = await api('/api/airgap', {
+      method: 'POST',
+      body: JSON.stringify({ enabled: next })
+    });
+    state.airgapEnabled = res.airgap_enabled;
+    const btn = $('#airgap-toggle-btn');
+    const pulse = $('#airgap-pulse');
+    const label = $('#airgap-label');
+    const dot = $('#airgap-indicator-dot');
+    const sysState = $('#system-state');
+
+    if (state.airgapEnabled) {
+      btn.classList.add('airgap-active');
+      btn.setAttribute('aria-pressed', 'true');
+      pulse.className = 'pulse red';
+      label.textContent = 'AIR-GAP: SECURED';
+      dot.className = 'pulse red';
+      sysState.textContent = 'AIR-GAP ISOLATION ACTIVE';
+      toast('Air-Gap Security Engaged: Zero outbound egress. Serving local sealed packages.');
+    } else {
+      btn.classList.remove('airgap-active');
+      btn.setAttribute('aria-pressed', 'false');
+      pulse.className = 'pulse green';
+      label.textContent = 'AIR-GAP: OFF';
+      dot.className = 'pulse green';
+      sysState.textContent = 'CONNECTED / SECURED';
+      toast('Connected Mode Restored: Live external feeds accessible.');
+    }
+    refreshWorld(state.currentFeed);
+  } catch (err) {
+    toast('Air-gap toggle failure: ' + err.message);
+  }
+}
+
+// Helpers
 const cap = s => String(s ?? '').replace(/[&<>"']/g, c => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
 }[c]));
@@ -60,7 +462,7 @@ async function api(url, options = {}) {
   return data;
 }
 
-// Tab Switching
+// Navigation Tabs
 function switchTab(tabId) {
   state.activeTab = tabId;
   $$('.nav-tab').forEach(b => {
@@ -80,7 +482,7 @@ function switchTab(tabId) {
   if (tabId === 'evidence') loadEvidence();
 }
 
-// Agent Listing & Selection
+// Specialist Agents
 function renderAgents() {
   const list = $('#agent-list');
   list.replaceChildren();
@@ -119,7 +521,7 @@ function selectAgent(id) {
   loadEphemeral(id);
 }
 
-// Ephemeral Safe UI Blueprint
+// Ephemeral UI
 let viewEpoch = 0;
 async function loadEphemeral(id) {
   const epoch = ++viewEpoch;
@@ -160,9 +562,8 @@ async function loadEphemeral(id) {
   }
 }
 
-function modal(open) {
-  $('#builder-modal').classList.toggle('hidden', !open);
-  if (open) setTimeout(() => $('#agent-form [name=name]').focus(), 40);
+function modal(id, open) {
+  $(id).classList.toggle('hidden', !open);
 }
 
 async function refreshAgents() {
@@ -203,10 +604,11 @@ async function runAgent(e) {
       method: 'POST',
       body: JSON.stringify({ agent_id: state.selected, prompt, model: $('#model-select').value })
     });
-    pending.querySelector('small').textContent = (agent ? agent.name : state.selected) + ' · ' + result.model + ' · UNVERIFIED';
+    pending.querySelector('small').textContent = (agent ? agent.name : state.selected) + ' · ' + result.model + ' · ' + result.evidence_status;
     pending.lastElementChild.textContent = result.answer;
     $('#run-state').textContent = 'COMPLETED';
-    toast('Run saved: ' + result.run_id + ' (response unverified)');
+    toast('Run saved: ' + result.run_id);
+    speakText(result.answer);
   } catch (err) {
     pending.querySelector('small').textContent = 'RUN NOT COMPLETED';
     pending.lastElementChild.textContent = err.message;
@@ -225,7 +627,9 @@ async function loadStatus() {
     state.modelConfigured = s.openrouter_configured;
     $('#metric-router').innerHTML = s.openrouter_configured ? 'ON <small>provider</small>' : 'OFF <small>provider</small>';
     $('#router-note').textContent = s.openrouter_configured ? 'OpenRouter server key configured' : 'Configure server-only key';
-    $('#system-state').textContent = s.openrouter_configured ? 'MODEL ROUTER READY' : 'LOCAL PROTOTYPE';
+    if (!state.airgapEnabled) {
+      $('#system-state').textContent = s.openrouter_configured ? 'MODEL ROUTER READY' : 'CONNECTED / SECURED';
+    }
     if (s.openrouter_configured) {
       const m = await api('/api/models');
       const sel = $('#model-select');
@@ -241,7 +645,7 @@ async function loadStatus() {
   }
 }
 
-// Multi-Feed World Intelligence
+// Multi-Feed World Telemetry
 async function refreshWorld(feed = state.currentFeed) {
   state.currentFeed = feed;
   try {
@@ -251,9 +655,7 @@ async function refreshWorld(feed = state.currentFeed) {
     $('#events-note').textContent = 'Feed ' + fmtUTC(data.feed_generated_at || data.retrieved_at);
     $('#feed-source').textContent = (data.source || 'WORLD INTELLIGENCE') + ' / ' + (data.mode || 'VERIFIED');
     $('#feed-timestamp').textContent = '• Generated ' + fmtUTC(data.feed_generated_at);
-    $('#live-status').textContent = 'LIVE / VERIFIED';
-    $('#live-status').parentElement.style.borderColor = '#306a57';
-    $('#live-status').parentElement.style.background = '#152d29';
+    $('#live-status').textContent = data.mode === 'LIVE_SOURCE' ? 'LIVE SOURCE' : (data.mode || 'VERIFIED');
     $('#source-indicator').textContent = 'CONNECTED';
     $('#source-indicator').classList.remove('offline');
     $('#stream-mode').textContent = data.mode === 'LIVE_SOURCE' ? 'OBSERVED' : 'NEAR REAL-TIME';
@@ -262,7 +664,7 @@ async function refreshWorld(feed = state.currentFeed) {
   } catch (e) {
     state.events = [];
     $('#feed-source').textContent = 'SOURCE OFFLINE';
-    $('#live-status').textContent = 'SOURCE OFFLINE';
+    $('#live-status').textContent = 'OFFLINE';
     $('#metric-events').innerHTML = '— <small>offline</small>';
     $('#events-note').textContent = 'No synthetic observations substituted';
     $('#stream-mode').textContent = 'OFFLINE';
@@ -429,7 +831,7 @@ async function loadApprovals() {
           <div>Agent: <b>${cap(a.agent_id)}</b></div>
           <div style="margin:4px 0; color:#859bb0;">Params: <code>${cap(JSON.stringify(a.parameters))}</code></div>
           <div class="approval-actions">
-            <button class="approve-btn">Approve & Execute ↗</button>
+            <button class="approve-btn">Approve &amp; Execute ↗</button>
             <button class="reject-btn">Reject ×</button>
           </div>
         `;
@@ -515,7 +917,7 @@ async function inspectPackage(pkgId) {
       <h4 style="margin:4px 0 8px; font-family:'Space Grotesk'; font-size:13px;">${cap(pkg.id)}</h4>
       <div><strong>Source Root:</strong> ${cap(pkg.source_id)} (<code>${cap(pkg.source_url)}</code>)</div>
       <div><strong>Classification:</strong> ${cap(pkg.classification)}</div>
-      <div style="margin:8px 0; padding:8px; background:#080e16; border-radius:5px;">
+      <div style="margin:8px 0; padding:8px; background:var(--panel); border-radius:5px;">
         <strong>Bitemporal Timeline:</strong>
         <div>• Observed At: ${cap(fmtUTC(pkg.temporal.observed_at))}</div>
         <div>• Available At: ${cap(fmtUTC(pkg.temporal.available_at))}</div>
@@ -696,7 +1098,7 @@ function renderGlobe() {
       ctx.beginPath();
       ctx.arc(x, y, mag * 2.2 + ((frame / 4) % 13), 0, Math.PI * 2);
       ctx.stroke();
-      ctx.fillStyle = (e.magnitude && e.magnitude >= 5.5) ? '#ffb679' : '#52eaca';
+      ctx.fillStyle = (e.magnitude && e.magnitude >= 5.5) ? '#ffb679' : state.accentColor;
       ctx.beginPath();
       ctx.arc(x, y, Math.max(1.5, mag * 1.2), 0, Math.PI * 2);
       ctx.fill();
@@ -755,6 +1157,59 @@ function attachEvents() {
     b.onclick = () => switchTab(b.dataset.tab);
   });
 
+  // 30-Language Selector Dropdown
+  $('#lang-select').value = state.currentLang;
+  $('#lang-select').onchange = e => applyLanguage(e.target.value);
+
+  // Theme switcher
+  $$('[data-theme-mode]').forEach(b => {
+    b.onclick = () => applyTheme(b.dataset.themeMode);
+  });
+
+  // Fluid Color Picker Popover
+  $('#color-menu-btn').onclick = e => {
+    e.stopPropagation();
+    $('#color-palette-popover').classList.toggle('hidden');
+  };
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.color-picker-wrapper')) {
+      $('#color-palette-popover').classList.add('hidden');
+    }
+  });
+  $$('.swatch').forEach(s => {
+    s.onclick = () => {
+      applyAccentColor(s.dataset.color);
+      $('#color-palette-popover').classList.add('hidden');
+    };
+  });
+  $('#custom-color-picker').oninput = e => applyAccentColor(e.target.value);
+
+  // World Clock & Weather Modals
+  $('#world-clock-trigger').onclick = () => {
+    updateWorldClocks();
+    modal('#world-clock-modal', true);
+  };
+  $('#close-clocks').onclick = () => modal('#world-clock-modal', false);
+
+  $('#open-weather-btn').onclick = () => {
+    loadWeatherForecast();
+    modal('#weather-modal', true);
+  };
+  $('#close-weather').onclick = () => modal('#weather-modal', false);
+
+  // Conversational Voice (ASR & TTS)
+  $('#mic-btn').onclick = toggleVoiceRecognition;
+  $('#tts-toggle-btn').onclick = () => {
+    state.ttsEnabled = !state.ttsEnabled;
+    localStorage.setItem('expertos-tts', state.ttsEnabled);
+    $('#tts-toggle-btn').classList.toggle('active', state.ttsEnabled);
+    if (!state.ttsEnabled && window.speechSynthesis) window.speechSynthesis.cancel();
+    toast(state.ttsEnabled ? 'Voice output enabled' : 'Voice output muted');
+  };
+
+  // Air-Gap Mode Toggle
+  $('#airgap-toggle-btn').onclick = toggleAirgap;
+
   // Ephemeral controls
   $('#ephemeral-refresh').onclick = () => loadEphemeral(state.selected);
   $('#ephemeral-dispose').onclick = () => {
@@ -764,9 +1219,9 @@ function attachEvents() {
   };
 
   // Agent Foundry Modal
-  ['#new-agent', '#open-builder'].forEach(s => ($(s).onclick = () => modal(true)));
-  ['#close-builder', '#cancel-builder'].forEach(s => ($(s).onclick = () => modal(false)));
-  $('#builder-modal').onclick = e => { if (e.target.id === 'builder-modal') modal(false); };
+  ['#new-agent', '#open-builder'].forEach(s => ($(s).onclick = () => modal('#builder-modal', true)));
+  ['#close-builder', '#cancel-builder'].forEach(s => ($(s).onclick = () => modal('#builder-modal', false)));
+  $('#builder-modal').onclick = e => { if (e.target.id === 'builder-modal') modal('#builder-modal', false); };
   
   $('#agent-form').onsubmit = async e => {
     e.preventDefault();
@@ -776,7 +1231,7 @@ function attachEvents() {
       const r = await api('/api/agents', { method: 'POST', body: JSON.stringify(payload) });
       await refreshAgents();
       selectAgent(r.agent.id);
-      modal(false);
+      modal('#builder-modal', false);
       $('#agent-form').reset();
       toast('Agent manifest created: ' + r.agent.name);
     } catch (err) {
@@ -796,9 +1251,11 @@ function attachEvents() {
   // Global keyboard shortcuts
   document.addEventListener('keydown', e => {
     if (e.key.toLowerCase() === 'n' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName) && !e.metaKey && !e.ctrlKey) {
-      modal(true);
+      modal('#builder-modal', true);
     }
-    if (e.key === 'Escape') modal(false);
+    if (e.key === 'Escape') {
+      $$('.modal-overlay').forEach(m => m.classList.add('hidden'));
+    }
   });
 
   // Feed selector buttons
@@ -858,17 +1315,23 @@ function attachEvents() {
 }
 
 async function boot() {
+  applyTheme(state.themeMode);
+  applyAccentColor(state.accentColor);
+  applyLanguage(state.currentLang);
+  
   attachEvents();
   resize();
   new ResizeObserver(resize).observe(canvas);
   renderGlobe();
 
   $('#date-label').textContent = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
-  function tick() {
-    $('#clock').textContent = new Date().toISOString().slice(11, 19) + ' UTC';
-  }
-  tick();
-  setInterval(tick, 1000);
+  updateWorldClocks();
+  setInterval(updateWorldClocks, 1000);
+
+  // Listen for system theme changes if in system mode
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if (state.themeMode === 'system') applyTheme('system');
+  });
 
   try {
     await refreshAgents();

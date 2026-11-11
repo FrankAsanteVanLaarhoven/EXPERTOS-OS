@@ -30,3 +30,4 @@ If you discover a security vulnerability within EXPERTOS-OS, please report it re
 - **PGP Encryption**: Available upon request.
 - **Response SLA**: Initial triage within 24 hours; critical mitigation within 72 hours.
 - **Public Disclosure**: We coordinate public disclosures after a validated patch has been released.
+

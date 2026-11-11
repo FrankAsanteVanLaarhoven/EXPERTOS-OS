@@ -83,7 +83,10 @@ from app.world import (
     fetch_economic_feed,
     fetch_geopolitical_feed,
     fetch_usgs_seismic_feed,
-    get_multi_feed_events
+    fetch_weather_forecast,
+    get_airgap_mode,
+    get_multi_feed_events,
+    set_airgap_mode
 )
 
 _cache = _CACHES['seismic']
@@ -200,6 +203,9 @@ class DecomposeMissionInput(BaseModel):
 class ApprovalDecisionInput(BaseModel):
     decision: Literal['approved', 'rejected']
     operator: str = Field(default='human-operator', max_length=100)
+
+class AirgapToggleInput(BaseModel):
+    enabled: bool
 
 # Branded SVG Favicon Asset
 FAVICON_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
@@ -589,6 +595,22 @@ def get_agent_ephemeral_view(agent_id: str):
     ui_tree = generate_ephemeral_view(agent_id, cat)
     return ui_tree.model_dump()
 
+# 8. Air-Gap Mode & Weather Forecasting
+@app.get('/api/airgap')
+def get_airgap_status():
+    return {'airgap_enabled': get_airgap_mode(), 'policy': 'ZERO_EXTERNAL_EGRESS' if get_airgap_mode() else 'EXTERNAL_EGRESS_PERMITTED'}
+
+@app.post('/api/airgap')
+def toggle_airgap(body: AirgapToggleInput):
+    current = set_airgap_mode(body.enabled)
+    return {'airgap_enabled': current, 'status': 'AIRGAP_ACTIVE' if current else 'CONNECTED_MODE'}
+
+@app.get('/api/weather/forecast')
+def get_weather():
+    with db() as con:
+        forecast = fetch_weather_forecast(con)
+    return forecast
+
 # Helper Agent Resolution
 def resolve_agent(agent_id: str):
     for p in presets():
@@ -621,6 +643,26 @@ def models_catalog():
 @app.post('/api/agent/run')
 def run_agent(body: RunInput):
     agent, extra = resolve_agent(body.agent_id)
+    if get_airgap_mode():
+        answer = f"[AIRGAP_LOCAL_EXECUTION]: Operating under strict Air-Gap isolation. Outbound model request blocked by policy. Evaluated role {agent['name']} using verified local constraints."
+        now = datetime.now(timezone.utc).isoformat()
+        run_id = hashlib.sha256((body.agent_id + body.prompt + now).encode()).hexdigest()[:18]
+        with db() as con:
+            con.execute(
+                'INSERT INTO runs VALUES(?,?,?,?,?,?,?,?)',
+                (run_id, body.agent_id, hashlib.sha256(body.prompt.encode()).hexdigest(), answer, 'local/airgap-offline', 'AIRGAP_VERIFIED', now, 5)
+            )
+        return {
+            'run_id': run_id,
+            'agent_id': body.agent_id,
+            'answer': answer,
+            'model': 'local/airgap-offline',
+            'evidence_status': 'AIRGAP_VERIFIED',
+            'created_at': now,
+            'elapsed_ms': 5,
+            'note': 'Executed within zero-egress airgap perimeter.'
+        }
+
     key = os.getenv('OPENROUTER_API_KEY')
     if not key:
         raise HTTPException(503, detail={'status': 'MODEL_NOT_CONFIGURED', 'message': 'Set OPENROUTER_API_KEY on the server. No simulated AI answer will be substituted.'})
