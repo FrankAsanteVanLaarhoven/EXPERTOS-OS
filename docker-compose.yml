@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  expertos-world-os:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: expertos-world-os:0.2.0
+    container_name: expertos-world-os
+    restart: unless-stopped
+    ports:
+      - "8099:8099"
+    environment:
+      - EXPERTOS_DB=/data/expertos.db
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+    volumes:
+      - expertos_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8099/api/status"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+volumes:
+  expertos_data:
+    name: expertos_world_os_data
+
